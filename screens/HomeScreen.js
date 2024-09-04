@@ -43,7 +43,7 @@ const HomeScreen = ({ navigation }) => {
 
   const handleUsage = async () => {
     const newCount = usageCount + 1;
-    if (newCount > 555) {
+    if (newCount > 522) {
       Alert.alert('Demo Time', 'شما در حال حاضر استفاده از نسخه دمو بودید برای ادامه استفاده از اپلیکیشین با برنامه نویس اپ تماس بگیرید.');
     } else {
       setUsageCount(newCount);

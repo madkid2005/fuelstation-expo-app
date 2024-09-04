@@ -130,7 +130,7 @@ const InputForm = ({ onCalculate }) => {
         onPress={() => setFuelType('Gas')}
       >
         <MaterialCommunityIcons name="gas-cylinder" size={20} color="#fff" />
-        <Text style={[styles.buttonText, { color: '#fff' }]}>گاز</Text>
+        <Text style={[styles.buttonText, { color: '#fff' }]}>نفتگاز</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[
@@ -175,7 +175,7 @@ const InputForm = ({ onCalculate }) => {
         condition: fuelType !== 'Gas', // Show if not Gas
       },
       {
-        label: 'تعداد مخازن گاز',
+        label: 'تعداد مخازن نفتگاز',
         value: numTanksGas,
         onChangeText: text => {
           setNumTanksGas(text);
@@ -198,7 +198,7 @@ const InputForm = ({ onCalculate }) => {
         condition: fuelType !== 'Gas', // Show if not Gas
       },
       {
-        label: 'تعداد نازل‌های گاز',
+        label: 'تعداد نازل‌های نفتگاز',
         value: numNozzlesGas,
         onChangeText: text => {
           setNumNozzlesGas(text);
@@ -217,7 +217,7 @@ const InputForm = ({ onCalculate }) => {
         condition: fuelType !== 'Gas', // Show if not Gas
       },
       {
-        label: 'مقدار ابتدای دوره گاز',
+        label: 'مقدار ابتدای دوره نفتگاز',
         value: allgaz,
         onChangeText: setAllGaz,
         keyboardType: 'numeric',
@@ -233,7 +233,7 @@ const InputForm = ({ onCalculate }) => {
         condition: fuelType !== 'Gas', // Show if not Gas
       },
       {
-        label: 'مقدار رسیده دوره گاز',
+        label: 'مقدار رسیده دوره نفتگاز',
         value: receivedGas,
         onChangeText: setReceivedGas,
         keyboardType: 'numeric',
@@ -257,7 +257,7 @@ const InputForm = ({ onCalculate }) => {
         condition: fuelType !== 'Gas', // Show if not Gas
       })),
       ...tanksGas.map((tank, index) => ({
-        label: `مقدار ( مخزن گاز ) شماره ${index + 1}`,
+        label: `مقدار ( مخزن نفتگاز ) شماره ${index + 1}`,
         component: (
           <View key={index}>
             <TextInput
@@ -305,7 +305,7 @@ const InputForm = ({ onCalculate }) => {
         condition: fuelType !== 'Gas', // Show if not Gas
       })),
       ...nozzlesGas.map((nozzle, index) => ({
-        label: `مقدار ( نازل گاز ) شماره  ${index + 1}`,
+        label: `مقدار ( نازل نفتگاز ) شماره  ${index + 1}`,
         component: (
           <View key={index} style={styles.nozzleContainer}>
             <TextInput
@@ -344,7 +344,7 @@ const InputForm = ({ onCalculate }) => {
         condition: fuelType !== 'Gas', // Show if not Gas
       },
       {
-        label: 'کل فروش الکترونیکی گاز طبق سامانه',
+        label: 'کل فروش الکترونیکی نفتگاز طبق سامانه',
         value: electrogaz,
         onChangeText: setElectroGaz,
         keyboardType: 'numeric',

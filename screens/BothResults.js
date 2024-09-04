@@ -1,38 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, I18nManager, Appearance } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 import * as Print from 'expo-print';
-import * as FileSystem from 'expo-file-system';
 import moment from 'moment-jalaali';
-import { Asset } from 'expo-asset';
 
 const BothResults = ({ results }) => {
   const [currentTime, setCurrentTime] = useState('');
+  const [logoURL, setLogoURL] = useState('https://s8.uupload.ir/files/logo_z2b9.png'); // Set your logo URL here
 
-  const [base64Image, setBase64Image] = useState('');
 
-  useEffect(() => {
-    const loadImage = async () => {
-      const imageAsset = Asset.fromModule(require('../assets/logo.png'));
-      await imageAsset.downloadAsync();
-      const base64 = await FileSystem.readAsStringAsync(imageAsset.localUri || imageAsset.uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      setBase64Image(`data:image/png;base64,${base64}`);
-    };
-
-    loadImage();
-
+  const handleButtonClick = () => {
     const now = moment();
     const formattedTime = now.format('HH:mm:ss');
     const formattedDate = now.format('jYYYY/jMM/jDD');
     setCurrentTime(`تاریخ: ${formattedDate} - ساعت: ${formattedTime}`);
+  };
 
-   
-}, []);
 
 
   const generatePDF = async () => {
     try {
+       
       const htmlContent = `
         <html>
           <head>
@@ -106,13 +93,16 @@ const BothResults = ({ results }) => {
                 margin-top: 20px;
                 align-items: center;
               }
-                  .header-image {
+              
+                 .header-image {
                 width: 200px;
                 margin-bottom: 10px;
                 text-align: center;
               }
               .headers {
                 text-align: center;
+                font-weight: bold;
+
               }
             </style>
           </head>
@@ -120,10 +110,11 @@ const BothResults = ({ results }) => {
             <div class="container">
               
               <div class="header">
-                              <div class="headers">
-                  <img src="${base64Image}" alt="Header Image" class="header-image"/>
+              <div class="headers">
 
-                </div> 
+ <img src="${logoURL}" class="header-image" alt="Logo"/>
+
+                </div>
                 <p class="header-text">نام جایگاه: ${results.names}</p>
                 <p class="header-text">کنترل کننده: ${results.namesboos}</p>
                 <p class="header-text">دوره کنترل: از ${results.startDateJS} تا ${results.endDateJS}</p>
@@ -157,28 +148,33 @@ const BothResults = ({ results }) => {
                     <div class="cell"><p class="cell-text">${index + 1}</p></div>
                   </div>
                 `).join('') : ''}
-                <div class="totals">
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">کل فروش مکانیکی بنزین: ${results.totalMechanicalSalesFuel}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">کل فروش الکترونیکی بنزین طبق گزارش سامانه: ${results.electrofuelJV}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">مقدار سرک / کسری بنزین: ${results.shortageOrSurplusFuel} ${results.vaziatFuel}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">کسری غیر مجاز بنزین: ${results.girFuel}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">مقدار مغایرت مکانیکی و الکترونیکی بنزین: ${results.HF}</p></div>
-                  </div>
-                </div>
-              </div>
+                 <div class="totals">
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">کل فروش مکانیکی بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.totalMechanicalSalesFuel}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">کل فروش الکترونیکی بنزین طبق سامانه:</p></div>
+          <div class="cell"><p class="cell-text">${results.electrofuelJV}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">مقدار سرک / کسری بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.shortageOrSurplusFuel} ${results.vaziatFuel}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">کسری غیر مجاز بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.girFuel}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">مقدار مغایرت مکانیکی و الکترونیکی بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.HF}</p></div>
+        </div>
+      </div>
+    </div>
 
-              <!-- بخش گزارش گاز -->
+              <!-- بخش گزارش نفتگاز -->
               <div class="table">
-                <p class="section-header">گزارش عملیات گاز</p>
+                <p class="section-header">گزارش عملیات نفتگاز</p>
                 <p class="cell-text">ابتدای دوره: ${results.allgazs}</p>
                 <p class="cell-text">مقدار رسیده: ${results.receivedGazJV}</p>
                 ${results.tanksGasG && results.tanksGasG.length > 0 ? results.tanksGasG.map((_, index) => `
@@ -201,22 +197,26 @@ const BothResults = ({ results }) => {
                     <div class="cell"><p class="cell-text">${index + 1}</p></div>
                   </div>
                 `).join('') : ''}
-                <div class="totals">
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">کل فروش مکانیکی گاز: ${results.totalMechanicalSalesGas}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">کل فروش الکترونیکی گاز طبق گزارش سامانه: ${results.electrogazJV}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">مقدار سرک / کسری گاز: ${results.shortageOrSurplusGas} ${results.vaziatGaz}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">مقدار مغایرت مکانیکی و الکترونیکی گاز: ${results.HG}</p></div>
-                  </div>
-                </div>
-              </div>
-
+                 <div class="totals">
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">کل فروش مکانیکی بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.totalMechanicalSalesGas}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">کل فروش الکترونیکی بنزین طبق سامانه:</p></div>
+          <div class="cell"><p class="cell-text">${results.electrogazJV}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">مقدار سرک / کسری بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.shortageOrSurplusGas} ${results.vaziatGaz}</p></div>
+        </div>
+        
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">مقدار مغایرت مکانیکی و الکترونیکی بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.HG}</p></div>
+        </div>
+      </div>
+    </div>
               </div>
                             <div class="text-center" style="display: flex; justify-content: space-between; width:90%; padding-right: 30px; padding-top:30px;">
                 <p class="cell-text">امضا:</p>
@@ -238,7 +238,8 @@ const BothResults = ({ results }) => {
         <Text style={styles.headerText}>نام جایگاه: {results.names}</Text>
         <Text style={styles.headerText}>کنترل کننده: {results.namesboos}</Text>
         <Text style={styles.headerText}>دوره کنترل: از {results.startDateJS} تا {results.endDateJS}</Text>
-        <Text style={styles.headerText}>{currentTime}</Text>
+        <Text style={styles.headerText}>تاریخ بازدید : {results.formattedDateJV}</Text>
+        <Text style={styles.headerText}>ساعت : {results.formattedTimeJV}</Text>
         
       </View>
 
@@ -274,9 +275,9 @@ const BothResults = ({ results }) => {
         </View>
       </View>
 
-      {/* گاز */}
+      {/* نفتگاز */}
       <View style={styles.table}>
-        <Text style={styles.sectionHeader}>گزارش عملیات گاز</Text>
+        <Text style={styles.sectionHeader}>گزارش عملیات نفتگاز</Text>
         <Text style={styles.cellText}>ابتدای دوره: {results.allgazs}</Text>
         <Text style={styles.cellText}>مقدار رسیده: {results.receivedGazJV}</Text>
         {results.tanksGasG && results.tanksGasG.map((_, index) => (
@@ -298,10 +299,10 @@ const BothResults = ({ results }) => {
           </View>
         ))}
         <View style={styles.totals}>
-          <View style={styles.cell}><Text style={styles.cellText}>کل فروش مکانیکی گاز: {results.totalMechanicalSalesGas}</Text></View>
-          <View style={styles.cell}><Text style={styles.cellText}>کل فروش الکترونیکی گاز طبق گزارش سامانه: {results.electrogazJV}</Text></View>
-          <View style={styles.cell}><Text style={styles.cellText}>مقدار سرک / کسری گاز: {results.shortageOrSurplusGas} {results.vaziatGaz}</Text></View>
-          <View style={styles.cell}><Text style={styles.cellText}>مقدار مغایرت مکانیکی و الکترونیکی گاز: {results.HG}</Text></View>
+          <View style={styles.cell}><Text style={styles.cellText}>کل فروش مکانیکی نفتگاز: {results.totalMechanicalSalesGas}</Text></View>
+          <View style={styles.cell}><Text style={styles.cellText}>کل فروش الکترونیکی نفتگاز طبق گزارش سامانه: {results.electrogazJV}</Text></View>
+          <View style={styles.cell}><Text style={styles.cellText}>مقدار سرک / کسری نفتگاز: {results.shortageOrSurplusGas} {results.vaziatGaz}</Text></View>
+          <View style={styles.cell}><Text style={styles.cellText}>مقدار مغایرت مکانیکی و الکترونیکی نفتگاز: {results.HG}</Text></View>
         </View>
       </View>
 

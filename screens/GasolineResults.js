@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 import * as FileSystem from 'expo-file-system';
-import { Asset } from 'expo-asset';
 import * as Print from 'expo-print';
+import { Asset } from 'expo-asset';
+import moment from 'moment-jalaali';
 
 const FuelResults = ({ results }) => {
-  const [base64Image, setBase64Image] = useState('');
+  const [currentTime, setCurrentTime] = useState('');
+  const [logoURL, setLogoURL] = useState('https://s8.uupload.ir/files/logo_z2b9.png'); // Set your logo URL here
 
-  useEffect(() => {
-    const loadImage = async () => {
-      const imageAsset = Asset.fromModule(require('../assets/logo.png'));
-      await imageAsset.downloadAsync();
-      const base64 = await FileSystem.readAsStringAsync(imageAsset.localUri || imageAsset.uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      setBase64Image(`data:image/png;base64,${base64}`);
-    };
 
-    loadImage();
-  }, []);
+  const handleButtonClick = () => {
+    const now = moment();
+    const formattedTime = now.format('HH:mm:ss');
+    const formattedDate = now.format('jYYYY/jMM/jDD');
+    setCurrentTime(`تاریخ: ${formattedDate} - ساعت: ${formattedTime}`);
+  };
+
+ 
 
   const generatePDF = async () => {
     try {
+
       const htmlContent = `
         <html>
           <head>
@@ -93,6 +93,10 @@ const FuelResults = ({ results }) => {
               .total-row {
                 text-align: right;
               }
+                .justify-content-between{
+                 display: flex;
+                 justify-content: space-between;
+                }
             
                  .header-image {
                 width: 200px;
@@ -101,14 +105,24 @@ const FuelResults = ({ results }) => {
               }
               .headers {
                 text-align: center;
+                font-weight: bold;
+
               }
+                .text-JV{
+                padding:4px;
+                border: 1px solid #000;
+
+                }
             </style>
           </head>
           <body>
             <div class="container">
               <div class="header">
                          <div class="headers">
-                  <img src="${base64Image}" alt="Header Image" class="header-image"/>
+
+ <img src="${logoURL}" class="header-image" alt="Logo"/>
+
+
 
                 </div> 
                 <p class="header-text">نام جایگاه: ${results.names}</p>
@@ -118,7 +132,7 @@ const FuelResults = ({ results }) => {
                 <p class="header-text">ساعت: ${results.formattedTimeJV}</p>
               </div>
               <div class="table">
-                <p class="section-header">گزارش عملیات گاز</p>
+                <p class="section-header">گزارش عملیات بنزین</p>
                 <p class="cell-text">ابتدای دوره: ${results.allfuels}</p>
                 <p class="cell-text">مقدار رسیده: ${results.receivedFuelJV}</p>
                 ${results.tanksFuelF && results.tanksFuelF.length > 0 ? results.tanksFuelF.map((fuel, index) => `
@@ -141,24 +155,29 @@ const FuelResults = ({ results }) => {
                     <div class="cell"><p class="cell-text">${index + 1}</p></div>
                   </div>
                 `).join('') : ''}
-                <div class="totals">
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">کل فروش مکانیکی گاز: ${results.totalMechanicalSalesFuel}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">کل فروش الکترونیکی گاز طبق گزارش سامانه: ${results.electrofuelJV}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">مقدار سرک / کسری گاز: ${results.shortageOrSurplusFuel} ${results.vaziatFuel}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">کسری غیر مجاز بنزین: ${results.girFuel}</p></div>
-                  </div>
-                  <div class="row total-row">
-                    <div class="cell"><p class="cell-text">مقدار مغایرت مکانیکی و الکترونیکی گاز: ${results.HF}</p></div>
-                  </div>
-                </div>
-              </div>
+               <div class="totals">
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">کل فروش مکانیکی بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.totalMechanicalSalesFuel}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">کل فروش الکترونیکی بنزین طبق گزارش سامانه:</p></div>
+          <div class="cell"><p class="cell-text">${results.electrofuelJV}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">مقدار سرک / کسری بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.shortageOrSurplusFuel} ${results.vaziatFuel}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">کسری غیر مجاز بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.girFuel}</p></div>
+        </div>
+        <div class="row total-row">
+          <div class="cell"><p class="cell-text">مقدار مغایرت مکانیکی و الکترونیکی بنزین:</p></div>
+          <div class="cell"><p class="cell-text">${results.HF}</p></div>
+        </div>
+      </div>
+    </div>
               <div class="text-center" style="display: flex; justify-content: space-between; width:70%; padding-right: 110px; padding-top:20px;">
                 <p class="cell-text">امضا:</p>
                 <p class="cell-text">تاریخ گزارش:</p>
@@ -219,6 +238,7 @@ const FuelResults = ({ results }) => {
           </View>
           <View style={styles.row}>
             <View style={styles.cell}><Text style={styles.cellText}>مقدار سرک / کسری بنزین: {results.shortageOrSurplusFuel} {results.vaziatFuel}</Text></View>
+          
           </View>
           <View style={styles.row}>
             <View style={styles.cell}><Text style={styles.cellText}>کسری غیر مجاز بنزین: {results.girFuel}</Text></View>

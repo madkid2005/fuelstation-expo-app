@@ -19,7 +19,7 @@ const ResultsTabs = ({ route }) => {
 
           if (route.name === 'نتایج بنزین') {
             iconName = 'local-gas-station';
-          } else if (route.name === 'نتایج گاز') {
+          } else if (route.name === 'نتایج نفتگاز') {
             iconName = 'whatshot';
           } else if (route.name === 'نتایج هر دو') {
             iconName = 'list'; // یا آیکون مناسب دیگر
@@ -32,7 +32,7 @@ const ResultsTabs = ({ route }) => {
       })}
     >
       <Tab.Screen name="نتایج بنزین" children={() => <GasolineResults results={results} />} />
-      <Tab.Screen name="نتایج گاز" children={() => <GasResults results={results} />} />
+      <Tab.Screen name="نتایج نفتگاز" children={() => <GasResults results={results} />} />
       <Tab.Screen name="نتایج هر دو" children={() => <BothResults results={results} />} />
     </Tab.Navigator>
   );
